@@ -1,0 +1,6 @@
+[submodule "thirdparty/JUCE"]
+	path = thirdparty/JUCE
+	url = https://github.com/juce-framework/JUCE.git
+[submodule "thirdparty/abseil-cpp"]
+	path = thirdparty/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
