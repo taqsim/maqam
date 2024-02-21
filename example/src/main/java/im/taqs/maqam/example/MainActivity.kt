@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         val audio = AudioRoot(this)
 
         audio.graph = AudioGraph.Builder()
-            .add("test_tone", TestTone())
+            .add(TestTone())
             .build()
 
         audio.start()

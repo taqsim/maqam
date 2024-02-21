@@ -50,7 +50,7 @@ class AudioGraph(
         return nodes[tag]
     }
 
-    fun add(tag: String, node: AudioNode) {
+    fun add(node: AudioNode, tag: String = randomNodeTag()): String {
         nodes[tag] = node
 
         if (Library.hasJNI) {
@@ -58,6 +58,8 @@ class AudioGraph(
         }
 
         listeners.forEach { it.onAudioGraphNodeAdded(this, node) }
+
+        return tag
     }
 
     fun connect(source: AudioNode, sink: AudioNode, audio: Boolean = true, midi: Boolean = false) {
@@ -133,17 +135,19 @@ class AudioGraph(
 
         private val graph = AudioGraph()
 
-        fun add(tag: String, node: AudioNode): Builder {
+        fun add(node: AudioNode, tag: String = randomNodeTag()): Builder {
             with(graph) {
-                if (nodes.isEmpty()) {
-                    add(tag, node)
+                val graphWasEmpty = nodes.isEmpty()
+
+                add(node, tag)
+
+                if (graphWasEmpty) {
                     try {
                         captureInputTo(node)
                     } catch (_: RuntimeException) {
                         // TODO - use library exception
                     }
                 } else {
-                    add(tag, node)
                     connect(nodes.values.last(), node)
                 }
             }

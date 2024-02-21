@@ -27,6 +27,7 @@ object Library {
         }
 
         System.loadLibrary("maqam")
+
         jniInit(context)
 
         hasJNI = true
