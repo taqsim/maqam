@@ -144,8 +144,9 @@ class AudioGraph(
                 if (graphWasEmpty) {
                     try {
                         captureInputTo(node)
-                    } catch (_: RuntimeException) {
-                        // TODO - use library exception
+                    } catch (_: Library.Exception) {
+                        // It is not currently possible to check if nodes accept input
+                        // Requires exposing juce::AudioProcessor I/O layout
                     }
                 } else {
                     connect(nodes.values.last(), node)
@@ -159,9 +160,10 @@ class AudioGraph(
             with(graph) {
                 if (nodes.isNotEmpty()) {
                     try {
-                    playbackOutputFrom(nodes.values.last())
-                    } catch (_: RuntimeException) {
-                        // TODO - use library exception
+                        playbackOutputFrom(nodes.values.last())
+                    } catch (_: Library.Exception) {
+                        // It is not currently possible to check if nodes generate output
+                        // Requires exposing juce::AudioProcessor I/O layout
                     }
                 }
 

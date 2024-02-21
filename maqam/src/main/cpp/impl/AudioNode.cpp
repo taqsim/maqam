@@ -358,7 +358,7 @@ Java_im_taqs_maqam_AudioNode_jniSetValueTreePropertyFloatValue(JNIEnv *env, jobj
     try {
         AudioNode::fromJava(env, thiz)->setValueTreePropertyFloatValue(cId, value);
     } catch (const std::exception& e) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
 
     env->ReleaseStringUTFChars(id, cId);
@@ -385,7 +385,7 @@ Java_im_taqs_maqam_AudioNode_jniSetValueTreePropertyStringValue(JNIEnv *env, job
     try {
         AudioNode::fromJava(env, thiz)->setValueTreePropertyStringValue(cId, cValue);
     } catch (const std::exception& e) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
 
     env->ReleaseStringUTFChars(value, cValue);

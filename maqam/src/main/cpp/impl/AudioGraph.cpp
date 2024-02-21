@@ -148,7 +148,7 @@ Java_im_taqs_maqam_AudioGraph_jniAddNode(JNIEnv *env, jobject thiz, jobject node
     AudioGraph::fromJava(env, thiz)->addNode(AudioNode::fromJava(env, node),
                                              AudioNode::getJUCEAudioProcessor(env, node));
     } catch (const std::exception& e) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
 }
 
@@ -163,7 +163,7 @@ Java_im_taqs_maqam_AudioGraph_jniConnectNodes(JNIEnv *env, jobject thiz,
                                                       AudioNode::fromJava(env, sink),
                                                       audio, midi);
     } catch (const std::exception& e) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
 }
 

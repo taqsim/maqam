@@ -22,7 +22,7 @@ Java_im_taqs_maqam_node_AKSampler_load(JNIEnv *env, jobject thiz, jstring path)
     try {
         GET_PROCESSOR().load(cPath);
     } catch (const std::exception& e) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), e.what());
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
 
     env->ReleaseStringUTFChars(path, cPath);
@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL
 Java_im_taqs_maqam_node_AKSampler_setScaleTuning(JNIEnv *env, jobject thiz, jintArray cents_from_c)
 {
     if (env->GetArrayLength(cents_from_c) != 12) {
-        env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "array size must be 12");
+        env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), "array size must be 12");
         return;
     }
 
