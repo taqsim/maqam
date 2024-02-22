@@ -12,8 +12,6 @@ import kotlin.random.nextUInt
 
 typealias AudioGraphNodePropertyValues = Map<String,AudioNodePropertyValues>
 
-fun randomNodeTag(): String = "node_" + Random.nextUInt(1000u, 9999u).toString()
-
 // Backed by a juce::AudioProcessorGraph instance
 class AudioGraph(
     private val overrideDefaultNodePropertyValues: AudioGraphNodePropertyValues = mapOf()
@@ -50,8 +48,10 @@ class AudioGraph(
         return nodes[tag]
     }
 
-    fun add(node: AudioNode, tag: String = randomNodeTag()): String {
-        nodes[tag] = node
+    fun add(node: AudioNode, tag: String? = null): String {
+        val tag2 = tag ?: nextNodeTag()
+
+        nodes[tag2] = node
 
         if (Library.hasJNI) {
             jniAddNode(node)
@@ -59,7 +59,7 @@ class AudioGraph(
 
         listeners.forEach { it.onAudioGraphNodeAdded(this, node) }
 
-        return tag
+        return tag2
     }
 
     fun connect(source: AudioNode, sink: AudioNode, audio: Boolean = true, midi: Boolean = false) {
@@ -123,6 +123,8 @@ class AudioGraph(
         jniDebugPrintConnections()
     }
 
+    private fun nextNodeTag(): String = "node_" + String.format("%04d", nodes.size)
+
     private external fun jniAddNode(node: AudioNode)
     private external fun jniConnectNodes(source: AudioNode?, sink: AudioNode?,
                                          audio: Boolean, midi: Boolean)
@@ -135,11 +137,11 @@ class AudioGraph(
 
         private val graph = AudioGraph()
 
-        fun add(node: AudioNode, tag: String = randomNodeTag()): Builder {
+        fun add(node: AudioNode, tag: String? = null): Builder {
             with(graph) {
                 val graphWasEmpty = nodes.isEmpty()
 
-                add(node, tag)
+                add(node, tag ?: graph.nextNodeTag())
 
                 if (graphWasEmpty) {
                     try {
