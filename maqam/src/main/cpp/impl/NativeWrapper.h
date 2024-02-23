@@ -14,13 +14,14 @@
 
 #include <jni.h>
 
-#include "maqam.h"
-
 namespace maqam {
 
 class NativeWrapper
 {
 public:
+    using ImplFactoryFunction = void*(*)();
+    using ImplDeleterFunction = void(*)(void*);
+
     static void bindClass(const std::string& javaClassName, ImplFactoryFunction factory,
                           ImplDeleterFunction deleter)
     {

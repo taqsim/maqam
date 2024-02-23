@@ -9,21 +9,15 @@
 #include <juce_core/native/juce_JNIHelpers_android.h>
 #include <juce_events/juce_events.h>
 
-#include "maqam.h"
 #include "impl/AudioRoot.h"
 #include "impl/AudioGraph.h"
 #include "impl/NativeWrapper.h"
 #include "nodes/nodes.h"
+#include "client/maqam.h"
 
 #define LIBRARY_JAVA_PACKAGE "im.taqs.maqam"
 
 using namespace maqam;
-
-void maqam_bind_class(const char* name, ImplFactoryFunction factory,
-                      ImplDeleterFunction deleter)
-{
-    NativeWrapper::bindClass(name, factory, deleter);
-}
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -45,4 +39,17 @@ Java_im_taqs_maqam_LibraryKt_jniInit(JNIEnv *env, jclass clazz, jobject context)
 
     // Avoid JUCE_ASSERT_MESSAGE_MANAGER_EXISTS when trying to instantiate an AudioProcessorGraph
     juce::MessageManager::getInstance();
+}
+
+extern "C"
+void _maqam_bind_class(const char* name, maqam_impl_factory_func_t factory,
+                       maqam_impl_deleter_func_t deleter)
+{
+    NativeWrapper::bindClass(name, factory, deleter);
+}
+
+extern "C"
+void* _maqam_get_impl(JNIEnv* env, jobject thiz)
+{
+    return NativeWrapper::getImpl<void>(env, thiz);
 }
