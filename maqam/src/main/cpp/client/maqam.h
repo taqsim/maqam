@@ -18,6 +18,6 @@ maqam_t* maqam_create();
 void     maqam_destroy(maqam_t*);
 void     maqam_bind_class(maqam_t*, const char*, maqam_impl_factory_func_t,
                           maqam_impl_deleter_func_t);
-void*    maqam_get_impl(maqam_t*, JNIEnv*, jobject);
+void*    maqam_get_impl(JNIEnv*, jobject);
 
 #endif // MAQAM_H

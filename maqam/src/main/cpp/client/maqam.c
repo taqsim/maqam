@@ -4,6 +4,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#include <jni.h>
+
 #include <dlfcn.h>
 #include <stdlib.h>
 
@@ -11,7 +13,6 @@
 
 typedef void(*maqam_bind_class_func_t)(const char*, maqam_impl_factory_func_t,
                                         maqam_impl_deleter_func_t);
-typedef void*(*maqam_get_impl_func_t)(JNIEnv*, jobject);
 
 struct priv_maqam_t {
     void* so;
@@ -37,8 +38,9 @@ void maqam_bind_class(maqam_t* maqam, const char* name, maqam_impl_factory_func_
     fp(name, factory, deleter);
 }
 
-void* maqam_get_impl(maqam_t* maqam, JNIEnv* env, jobject thiz)
+void* maqam_get_impl(JNIEnv* env, jobject thiz)
 {
-    maqam_get_impl_func_t fp = (maqam_get_impl_func_t)dlsym(maqam->so, "_maqam_get_impl");
-    return fp(env, thiz);
+    jclass clazz = (*env)->GetObjectClass(env, thiz);
+    jfieldID field = (*env)->GetFieldID(env, clazz, "impl", "J");
+    return (void*)(*env)->GetLongField(env, thiz, field);
 }

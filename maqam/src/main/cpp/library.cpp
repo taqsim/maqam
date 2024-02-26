@@ -21,7 +21,7 @@ using namespace maqam;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_im_taqs_maqam_LibraryKt_jniInit(JNIEnv *env, jclass clazz, jobject context)
+Java_im_taqs_maqam_LibraryKt_jniInit(JNIEnv *env, jclass /*clazz*/, jobject context)
 {
     // Bind Java to native library classes
     NativeWrapper::bindClass<AudioGraph>(LIBRARY_JAVA_PACKAGE ".AudioGraph");
@@ -46,10 +46,4 @@ void _maqam_bind_class(const char* name, maqam_impl_factory_func_t factory,
                        maqam_impl_deleter_func_t deleter)
 {
     NativeWrapper::bindClass(name, factory, deleter);
-}
-
-extern "C"
-void* _maqam_get_impl(JNIEnv* env, jobject thiz)
-{
-    return NativeWrapper::getImpl<void>(env, thiz);
 }
