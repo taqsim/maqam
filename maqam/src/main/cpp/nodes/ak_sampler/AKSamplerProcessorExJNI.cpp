@@ -6,12 +6,12 @@
 
 #include <jni.h>
 
-#include "impl/NativeWrapper.h"
+#include "impl/AudioNode.h"
 #include "AKSamplerProcessorEx.h"
 
 using namespace maqam;
 
-#define GET_PROCESSOR() (*NativeWrapper::getImpl<AKSamplerProcessorEx>(env, thiz))
+#define GET_PROCESSOR(e,t) (*reinterpret_cast<AKSamplerProcessorEx*>(AudioNode::getJUCEAudioProcessor(e,t)))
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -20,7 +20,7 @@ Java_im_taqs_maqam_node_AKSampler_load(JNIEnv *env, jobject thiz, jstring path)
     const char* cPath = env->GetStringUTFChars(path, nullptr);
 
     try {
-        GET_PROCESSOR().load(cPath);
+        GET_PROCESSOR(env, thiz).load(cPath);
     } catch (const std::exception& e) {
         env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }
@@ -32,14 +32,14 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_im_taqs_maqam_node_AKSampler_stopAllVoices(JNIEnv *env, jobject thiz)
 {
-    GET_PROCESSOR().stopAllVoices();
+    GET_PROCESSOR(env, thiz).stopAllVoices();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_im_taqs_maqam_node_AKSampler_jniGetMidiChannel(JNIEnv *env, jobject thiz)
 {
-    return GET_PROCESSOR().getMidiChannel();
+    return GET_PROCESSOR(env, thiz).getMidiChannel();
 }
 
 extern "C"
@@ -47,14 +47,14 @@ JNIEXPORT void JNICALL
 Java_im_taqs_maqam_node_AKSampler_jniSetMidiChannel(JNIEnv *env, jobject thiz,
                                                          jint midi_channel)
 {
-    GET_PROCESSOR().setMidiChannel(midi_channel);
+    GET_PROCESSOR(env, thiz).setMidiChannel(midi_channel);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_im_taqs_maqam_node_AKSampler_setA4Frequency(JNIEnv *env, jobject thiz, jfloat frequency)
 {
-    GET_PROCESSOR().setA4Frequency(frequency);
+    GET_PROCESSOR(env, thiz).setA4Frequency(frequency);
 }
 
 extern "C"
@@ -75,7 +75,7 @@ Java_im_taqs_maqam_node_AKSampler_setScaleTuning(JNIEnv *env, jobject thiz, jint
         cppCents[i] = jcents[i];
     }
 
-    GET_PROCESSOR().setScaleCents(cppCents);
+    GET_PROCESSOR(env, thiz).setScaleCents(cppCents);
 
     env->ReleaseIntArrayElements(cents_from_c, jcents, 0);
 }

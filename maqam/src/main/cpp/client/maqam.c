@@ -38,9 +38,9 @@ void maqam_bind_class(maqam_t* maqam, const char* name, maqam_impl_factory_func_
     fp(name, factory, deleter);
 }
 
-void* maqam_get_impl(JNIEnv* env, jobject thiz)
+void* maqam_get_processor(JNIEnv* env, jobject thiz)
 {
     jclass clazz = (*env)->GetObjectClass(env, thiz);
-    jfieldID field = (*env)->GetFieldID(env, clazz, "impl", "J");
+    jfieldID field = (*env)->GetFieldID(env, clazz, "processor", "J");
     return (void*)(*env)->GetLongField(env, thiz, field);
 }

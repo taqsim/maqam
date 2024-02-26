@@ -47,10 +47,6 @@ AudioGraph::~AudioGraph()
 
 AudioGraph* AudioGraph::fromJava(JNIEnv *env, jobject thiz) noexcept
 {
-    if (thiz == nullptr) {
-        return nullptr;
-    }
-
     return NativeWrapper::getImpl<AudioGraph>(env, thiz);
 }
 
@@ -145,7 +141,7 @@ JNIEXPORT void JNICALL
 Java_im_taqs_maqam_AudioGraph_jniAddNode(JNIEnv *env, jobject thiz, jobject node)
 {
     try {
-    AudioGraph::fromJava(env, thiz)->addNode(AudioNode::fromJava(env, node),
+        AudioGraph::fromJava(env, thiz)->addNode(AudioNode::fromJava(env, node),
                                              AudioNode::getJUCEAudioProcessor(env, node));
     } catch (const std::exception& e) {
         env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());

@@ -24,8 +24,9 @@ JNIEXPORT void JNICALL
 Java_im_taqs_maqam_LibraryKt_jniInit(JNIEnv *env, jclass /*clazz*/, jobject context)
 {
     // Bind Java to native library classes
-    NativeWrapper::bindClass<AudioGraph>(LIBRARY_JAVA_PACKAGE ".AudioGraph");
     NativeWrapper::bindClass<AudioRoot>(LIBRARY_JAVA_PACKAGE ".AudioRoot");
+    NativeWrapper::bindClass<AudioGraph>(LIBRARY_JAVA_PACKAGE ".AudioGraph");
+    NativeWrapper::bindClass<AudioNode>(LIBRARY_JAVA_PACKAGE ".AudioNode");
 
     // Bind Java to native node classes
     bindNodeClasses();
@@ -45,5 +46,5 @@ extern "C"
 void _maqam_bind_class(const char* name, maqam_impl_factory_func_t factory,
                        maqam_impl_deleter_func_t deleter)
 {
-    NativeWrapper::bindClass(name, factory, deleter);
+    AudioNode::bindJUCEAudioProcessorClass(name, factory, deleter);
 }

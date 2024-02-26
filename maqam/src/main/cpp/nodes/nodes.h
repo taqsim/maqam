@@ -7,7 +7,7 @@
 #ifndef NODES_H
 #define NODES_H
 
-#include "impl/NativeWrapper.h"
+#include "impl/AudioNode.h"
 
 #include "test_tone/SineWaveAudioProcessor.h"
 #include "ak_sampler/AKSamplerProcessorEx.h"
@@ -20,7 +20,7 @@
 namespace maqam {
 
 template<class T>
-constexpr auto bind = &NativeWrapper::bindClass<T>;
+constexpr auto bind = &AudioNode::bindJUCEAudioProcessorClass<T>;
 
 void bindNodeClasses()
 {

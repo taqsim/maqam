@@ -42,27 +42,14 @@ open class AudioNode(): NativeWrapper() {
     private val properties = mutableMapOf<String, AudioNodeProperty>()
     private val defaultPropertyValues = mutableMapOf<String, Variant>()
 
-    // In contrast to other NativeWrapper derived classes, AudioNode keeps an additional native
-    // object instance in a variable called 'node', in addition to 'impl'. This way AudioNode
-    // subclasses can be simply bound to generic juce::AudioProcessor subclasses and the library
-    // does not require custom processors to derive from a library class (see nodes.h in NDK code).
-
-    private var node: Long = 0
+    private var processor: Long = 0
 
     init {
         if (Library.hasJNI) {
-            jniCreateNode()
+            jniCreateProcessor()
         }
 
         metadata = this.metadata(Library.PrivateMetadataKey) // underscore means private
-    }
-
-    override fun finalize() {
-        if (Library.hasJNI) {
-            jniDestroyNode()
-        }
-
-        super.finalize()
     }
 
     internal var propertyValues: AudioNodePropertyValues
@@ -303,7 +290,6 @@ open class AudioNode(): NativeWrapper() {
     external fun jniGetValueTreePropertyStringValue(id: String): String
     external fun jniSetValueTreePropertyStringValue(id: String, value: String)
 
-    private external fun jniCreateNode()
-    private external fun jniDestroyNode()
+    private external fun jniCreateProcessor()
 
 }

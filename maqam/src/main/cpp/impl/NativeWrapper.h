@@ -23,30 +23,26 @@ public:
     using ImplDeleterFunction = void(*)(void*);
 
     static void bindClass(const std::string& javaClassName, ImplFactoryFunction factory,
-                          ImplDeleterFunction deleter)
+                          ImplDeleterFunction deleter, const std::string& field = kDefaultImpl)
     {
-        sImplFactory[javaClassName] = factory;
-        sImplDeleter[javaClassName] = deleter;
+        std::string key = javaClassName + "_" + field;
+        sImplFactory[key] = factory;
+        sImplDeleter[key] = deleter;
     }
 
     template<class T>
-    static void bindClass(const std::string& javaClassName)
+    static void bindClass(const std::string& javaClassName, const std::string& field = kDefaultImpl)
     {
-        sImplFactory[javaClassName] = &createImpl<T>;
-        sImplDeleter[javaClassName] = &deleteImpl<T>;
+        std::string key = javaClassName + "_" + field;
+        sImplFactory[key] = []() -> void* { return new T(); };
+        sImplDeleter[key] = [](void* ptr) { delete reinterpret_cast<T*>(ptr); };
     }
 
-    static void createImpl(JNIEnv *env, jobject thiz);
-    static void deleteImpl(JNIEnv *env, jobject thiz);
+    static void createImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl);
+    static void deleteImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl);
 
     template<class T>
-    static T* getImpl(JNIEnv *env, jobject thiz)
-    {
-        return getPointer<T>(env, thiz, "impl");
-    }
-
-    template<class T>
-    static T* getPointer(JNIEnv *env, jobject thiz, const char* field)
+    static T* getImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl)
     {
         if (thiz == nullptr) {
             return nullptr;
@@ -58,19 +54,9 @@ public:
     }
 
 private:
+    static constexpr const char* kDefaultImpl = "impl";
+
     static std::string getClassName(JNIEnv *env, jclass clazz);
-
-    template<class T>
-    static void* createImpl()
-    {
-        return new T;
-    }
-
-    template<class T>
-    static void deleteImpl(void* impl)
-    {
-        delete reinterpret_cast<T*>(impl);
-    }
 
     using ImplFactoryMap = std::map<std::string, ImplFactoryFunction>;
     static ImplFactoryMap sImplFactory;

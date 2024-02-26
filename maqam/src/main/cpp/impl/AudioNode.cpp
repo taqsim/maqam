@@ -36,13 +36,37 @@ static juce::AudioParameterFloat* asAudioParameterFloat(juce::AudioProcessorPara
     //return dynamic_cast<juce::AudioParameterFloat*>(p);
 }
 
-AudioNode::AudioNode(JNIEnv* env, jobject ownerLocalRef)
+AudioNode::AudioNode()
     : mJVM(nullptr)
-    , mEnv(env)
-    , mEnvThreadId(std::this_thread::get_id())
-    , mOwner(env->NewGlobalRef(ownerLocalRef))
+    , mEnv(nullptr)
+{}
+
+AudioNode::~AudioNode()
 {
+    AudioNode::getJUCEAudioProcessor(mEnv, mOwner)->removeListener(this);
+    mEnv->DeleteGlobalRef(mOwner);
+
+    NativeWrapper::deleteImpl(mEnv, mOwner, AudioNode::kProcessorImpl);
+}
+
+AudioNode* AudioNode::fromJava(JNIEnv *env, jobject thiz) noexcept
+{
+    return NativeWrapper::getImpl<AudioNode>(env, thiz);
+}
+
+juce::AudioProcessor* AudioNode::getJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept
+{
+    return NativeWrapper::getImpl<juce::AudioProcessor>(env, thiz, AudioNode::kProcessorImpl);
+}
+
+void AudioNode::createJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept
+{
+    NativeWrapper::createImpl(env, thiz, AudioNode::kProcessorImpl);
+
+    mEnv = env;
     mEnv->GetJavaVM(&mJVM);
+    mEnvThreadId = std::this_thread::get_id();
+    mOwner = mEnv->NewGlobalRef(thiz);
 
     juce::AudioProcessor* processor = AudioNode::getJUCEAudioProcessor(mEnv, mOwner);
     const juce::Array<juce::AudioProcessorParameter*> parameters = processor->getParameters();
@@ -62,28 +86,6 @@ AudioNode::AudioNode(JNIEnv* env, jobject ownerLocalRef)
     if (proc != nullptr) {
         proc->getValueTree().addListener(this);
     }
-}
-
-AudioNode::~AudioNode()
-{
-    AudioNode::getJUCEAudioProcessor(mEnv, mOwner)->removeListener(this);
-    mEnv->DeleteGlobalRef(mOwner);
-}
-
-AudioNode* AudioNode::fromJava(JNIEnv *env, jobject thiz) noexcept
-{
-    if (thiz == nullptr) {
-        return nullptr;
-    }
-
-    return reinterpret_cast<AudioNode*>(
-        env->GetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "node", "J"))
-    );
-}
-
-juce::AudioProcessor* AudioNode::getJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept
-{
-    return NativeWrapper::getImpl<juce::AudioProcessor>(env, thiz);
 }
 
 float AudioNode::getParameterValue(const juce::String& id) noexcept
@@ -256,19 +258,9 @@ void AudioNode::valueTreePropertyChanged(juce::ValueTree& treeWhosePropertyHasCh
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_im_taqs_maqam_AudioNode_jniCreateNode(JNIEnv *env, jobject thiz)
+Java_im_taqs_maqam_AudioNode_jniCreateProcessor(JNIEnv *env, jobject thiz)
 {
-    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "node", "J"),
-                      reinterpret_cast<jlong>(new AudioNode(env, thiz)));
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_im_taqs_maqam_AudioNode_jniDestroyNode(JNIEnv *env, jobject thiz)
-{
-    AudioNode* node = AudioNode::fromJava(env, thiz);
-    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "node", "J"), 0LL);
-    delete node;
+    AudioNode::fromJava(env, thiz)->createJUCEAudioProcessor(env, thiz);
 }
 
 extern "C"
@@ -318,7 +310,7 @@ JNIEXPORT jstring JNICALL
 Java_im_taqs_maqam_AudioNode_jniGetParameterValueAsText(JNIEnv *env, jobject thiz, jstring id)
 {
     const char* cId = env->GetStringUTFChars(id, nullptr);
-    juce::String value =  AudioNode::fromJava(env, thiz)->getParameterValueAsText(cId);
+    juce::String value = AudioNode::fromJava(env, thiz)->getParameterValueAsText(cId);
     env->ReleaseStringUTFChars(id, cId);
 
     return env->NewStringUTF(value.toUTF8());

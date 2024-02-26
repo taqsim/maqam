@@ -123,7 +123,7 @@ class AudioGraph(
         jniDebugPrintConnections()
     }
 
-    private fun nextNodeTag(): String = "node_" + String.format("%04d", nodes.size)
+    private fun nextNodeTag(): String = "node_" + String.format("%03d", nodes.size)
 
     private external fun jniAddNode(node: AudioNode)
     private external fun jniConnectNodes(source: AudioNode?, sink: AudioNode?,

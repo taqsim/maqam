@@ -23,10 +23,6 @@ AudioRoot::AudioRoot()
 
 AudioRoot* AudioRoot::fromJava(JNIEnv *env, jobject thiz) noexcept
 {
-    if (thiz == nullptr) {
-        return nullptr;
-    }
-
     return NativeWrapper::getImpl<AudioRoot>(env, thiz);
 }
 

@@ -13,16 +13,36 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "NativeWrapper.h"
+
 namespace maqam {
 
 class AudioNode : protected juce::AudioProcessorListener, protected juce::ValueTree::Listener
 {
 public:
-    AudioNode(JNIEnv *env, jobject ownerLocalRef);
+    AudioNode();
     ~AudioNode() override;
 
+    constexpr static const char* kProcessorImpl = "processor";
+
     static AudioNode* fromJava(JNIEnv *env, jobject thiz) noexcept;
+
+    static void bindJUCEAudioProcessorClass(const std::string& javaClassName,
+                                   NativeWrapper::ImplFactoryFunction factory,
+                                   NativeWrapper::ImplDeleterFunction deleter)
+    {
+        NativeWrapper::bindClass(javaClassName, factory, deleter, kProcessorImpl);
+    }
+
+    template<class T>
+    static void bindJUCEAudioProcessorClass(const std::string& javaClassName)
+    {
+        NativeWrapper::bindClass<T>(javaClassName, kProcessorImpl);
+    }
+
     static juce::AudioProcessor* getJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept;
+
+    void createJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept;
 
     juce::AudioProcessorGraph::NodeID getJUCEAudioProcessorGraphNodeID()
     {

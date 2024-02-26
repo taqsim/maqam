@@ -25,13 +25,14 @@ std::string NativeWrapper::getClassName(JNIEnv *env, /*Class<T>*/jclass clazz)
     return clsName;
 }
 
-void NativeWrapper::createImpl(JNIEnv *env, jobject thiz)
+void NativeWrapper::createImpl(JNIEnv *env, jobject thiz, const char* field)
 {
     ImplFactoryFunction factory = nullptr;
     jclass cls = env->GetObjectClass(thiz);
 
     while (factory == nullptr) {
-        factory = sImplFactory[getClassName(env, cls)];
+        std::string key = getClassName(env, cls) + "_" + field;
+        factory = sImplFactory[key];
 
         if (factory == nullptr) {
             cls = env->GetSuperclass(cls);
@@ -40,16 +41,17 @@ void NativeWrapper::createImpl(JNIEnv *env, jobject thiz)
     }
 
     const auto impl = reinterpret_cast<jlong>(factory());
-    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "impl", "J"), impl);
+    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), field, "J"), impl);
 }
 
-void NativeWrapper::deleteImpl(JNIEnv *env, jobject thiz)
+void NativeWrapper::deleteImpl(JNIEnv *env, jobject thiz, const char* field)
 {
     ImplDeleterFunction deleter = nullptr;
     jclass cls = env->GetObjectClass(thiz);
 
     while (deleter == nullptr) {
-        deleter = sImplDeleter[getClassName(env, cls)];
+        std::string key = getClassName(env, cls) + "_" + field;
+        deleter = sImplDeleter[key];
 
         if (deleter == nullptr) {
             cls = env->GetSuperclass(cls);
@@ -58,7 +60,7 @@ void NativeWrapper::deleteImpl(JNIEnv *env, jobject thiz)
     }
 
     deleter(NativeWrapper::getImpl<void*>(env, thiz));
-    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), "impl", "J"), 0LL);
+    env->SetLongField(thiz, env->GetFieldID(env->GetObjectClass(thiz), field, "J"), 0LL);
 }
 
 extern "C"
