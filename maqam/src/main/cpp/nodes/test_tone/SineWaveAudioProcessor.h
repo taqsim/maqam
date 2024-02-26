@@ -53,7 +53,8 @@ namespace maqam {
 
         void processBlock (juce::AudioSampleBuffer& buffer, juce::MidiBuffer& midiMessages) override
         {
-            const float f = mParameters.getParameterAsValue(kParameterIdSineWaveFrequency).getValue();
+            const float f = reinterpret_cast<juce::AudioParameterFloat*>(
+                    mParameters.getParameter(kParameterIdSineWaveFrequency))->get();
             mSineWave->setFrequency(f);
 
             const int numSamples = buffer.getNumSamples();
