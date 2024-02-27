@@ -29,7 +29,7 @@ AudioRoot* AudioRoot::fromJava(JNIEnv *env, jobject thiz) noexcept
 void AudioRoot::setGraph(AudioGraph* graph) noexcept
 {
     if (graph != nullptr) {
-        juce::AudioProcessorGraph& audioProcessorGraph = graph->getJUCEAudioProcessorGraph();
+        juce::AudioProcessorGraph& audioProcessorGraph = graph->getAudioProcessorGraph();
         audioProcessorGraph.prepareToPlay(kSampleRate, kMaxFramesPerBlock);
         mGraph = &audioProcessorGraph;
     } else {
@@ -71,7 +71,7 @@ void AudioRoot::connectMidiDevice(int id, AMidiDevice* midiDevice) noexcept
         mMidiSource[idx].port = port;
 
     } else if (AMidiDevice_getNumInputPorts(midiDevice) > 0) {
-        // TODO : implement MIDI output
+        // MIDI output currently not supported
     }
 
     mMidiSourceMutex.unlock();
@@ -159,7 +159,7 @@ void AudioRoot::createStream() noexcept
     }
 }
 
-// TODO - sample accuracy
+// MIDI events are currently not sample accurate
 void AudioRoot::processMidi(juce::MidiBuffer& inBuffer) noexcept
 {
     uint8_t midiBytes[kMaxMidiReadBufferBytes];

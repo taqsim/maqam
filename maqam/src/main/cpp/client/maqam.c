@@ -31,16 +31,16 @@ void maqam_destroy(maqam_t* maqam)
     free(maqam);
 }
 
-void maqam_bind_class(maqam_t* maqam, const char* name, maqam_impl_factory_func_t factory,
-                      maqam_impl_deleter_func_t deleter)
+void maqam_bind_dsp_class(maqam_t* maqam, const char* name, maqam_impl_factory_func_t factory,
+                          maqam_impl_deleter_func_t deleter)
 {
-    maqam_bind_class_func_t fp = (maqam_bind_class_func_t)dlsym(maqam->so, "_maqam_bind_class");
+    maqam_bind_class_func_t fp = (maqam_bind_class_func_t)dlsym(maqam->so, "_maqam_bind_dsp_class");
     fp(name, factory, deleter);
 }
 
-void* maqam_get_processor(JNIEnv* env, jobject thiz)
+void* maqam_get_dsp(JNIEnv* env, jobject thiz)
 {
     jclass clazz = (*env)->GetObjectClass(env, thiz);
-    jfieldID field = (*env)->GetFieldID(env, clazz, "processor", "J");
+    jfieldID field = (*env)->GetFieldID(env, clazz, "dsp", "J");
     return (void*)(*env)->GetLongField(env, thiz, field);
 }

@@ -16,8 +16,8 @@ typedef void  (*maqam_impl_deleter_func_t)(void*);
 
 maqam_t* maqam_create();
 void     maqam_destroy(maqam_t*);
-void     maqam_bind_class(maqam_t*, const char*, maqam_impl_factory_func_t,
-                          maqam_impl_deleter_func_t);
-void*    maqam_get_processor(JNIEnv*, jobject);
+void     maqam_bind_dsp_class(maqam_t*, const char*, maqam_impl_factory_func_t,
+                              maqam_impl_deleter_func_t);
+void*    maqam_get_dsp(JNIEnv*, jobject);
 
 #endif // MAQAM_H

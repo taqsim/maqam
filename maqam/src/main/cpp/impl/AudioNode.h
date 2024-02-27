@@ -23,33 +23,33 @@ public:
     AudioNode();
     ~AudioNode() override;
 
-    constexpr static const char* kProcessorImpl = "processor";
+    constexpr static const char* kDSPFieldName = "dsp";
 
     static AudioNode* fromJava(JNIEnv *env, jobject thiz) noexcept;
 
-    static void bindJUCEAudioProcessorClass(const std::string& javaClassName,
-                                   NativeWrapper::ImplFactoryFunction factory,
-                                   NativeWrapper::ImplDeleterFunction deleter)
+    static void bindDSPClass(const std::string& javaClassName,
+                             NativeWrapper::ImplFactoryFunction factory,
+                             NativeWrapper::ImplDeleterFunction deleter)
     {
-        NativeWrapper::bindClass(javaClassName, factory, deleter, kProcessorImpl);
+        NativeWrapper::bindClass(javaClassName, factory, deleter, kDSPFieldName);
     }
 
     template<class T>
-    static void bindJUCEAudioProcessorClass(const std::string& javaClassName)
+    static void bindDSPClass(const std::string& javaClassName)
     {
-        NativeWrapper::bindClass<T>(javaClassName, kProcessorImpl);
+        NativeWrapper::bindClass<T>(javaClassName, kDSPFieldName);
     }
 
-    static juce::AudioProcessor* getJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept;
+    static juce::AudioProcessor* getDSP(JNIEnv *env, jobject thiz) noexcept;
 
-    void createJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept;
+    void createDSP(JNIEnv *env, jobject thiz) noexcept;
 
-    juce::AudioProcessorGraph::NodeID getJUCEAudioProcessorGraphNodeID()
+    juce::AudioProcessorGraph::NodeID getAudioProcessorGraphNodeID()
     {
         return mAudioProcessorGraphNodeID;
     }
 
-    void setJUCEAudioProcessorGraphNodeID(juce::AudioProcessorGraph::NodeID nodeID)
+    void setAudioProcessorGraphNodeID(juce::AudioProcessorGraph::NodeID nodeID)
     {
         mAudioProcessorGraphNodeID = nodeID;
     }

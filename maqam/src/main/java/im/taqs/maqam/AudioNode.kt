@@ -42,14 +42,14 @@ open class AudioNode(): NativeWrapper() {
     private val properties = mutableMapOf<String, AudioNodeProperty>()
     private val defaultPropertyValues = mutableMapOf<String, Variant>()
 
-    private var processor: Long = 0
+    private var dsp: Long = 0
 
     init {
         if (Library.hasJNI) {
             jniCreateProcessor()
         }
 
-        metadata = this.metadata(Library.PrivateMetadataKey) // underscore means private
+        metadata = this.metadata(Library.PrivateMetadataKey)
     }
 
     internal var propertyValues: AudioNodePropertyValues

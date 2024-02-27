@@ -21,7 +21,7 @@ public:
 
     static AudioGraph* fromJava(JNIEnv *env, jobject thiz) noexcept;
 
-    juce::AudioProcessorGraph& getJUCEAudioProcessorGraph() noexcept { return mImpl; }
+    juce::AudioProcessorGraph& getAudioProcessorGraph() noexcept { return mImpl; }
 
     void addNode(AudioNode* node, juce::AudioProcessor* processor);
     void connectNodes(AudioNode* source, AudioNode* sink, bool audio, bool midi);

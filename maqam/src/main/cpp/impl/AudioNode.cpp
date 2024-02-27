@@ -43,10 +43,10 @@ AudioNode::AudioNode()
 
 AudioNode::~AudioNode()
 {
-    AudioNode::getJUCEAudioProcessor(mEnv, mOwner)->removeListener(this);
+    AudioNode::getDSP(mEnv, mOwner)->removeListener(this);
     mEnv->DeleteGlobalRef(mOwner);
 
-    NativeWrapper::deleteImpl(mEnv, mOwner, AudioNode::kProcessorImpl);
+    NativeWrapper::deleteImpl(mEnv, mOwner, AudioNode::kDSPFieldName);
 }
 
 AudioNode* AudioNode::fromJava(JNIEnv *env, jobject thiz) noexcept
@@ -54,21 +54,21 @@ AudioNode* AudioNode::fromJava(JNIEnv *env, jobject thiz) noexcept
     return NativeWrapper::getImpl<AudioNode>(env, thiz);
 }
 
-juce::AudioProcessor* AudioNode::getJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept
+juce::AudioProcessor* AudioNode::getDSP(JNIEnv *env, jobject thiz) noexcept
 {
-    return NativeWrapper::getImpl<juce::AudioProcessor>(env, thiz, AudioNode::kProcessorImpl);
+    return NativeWrapper::getImpl<juce::AudioProcessor>(env, thiz, AudioNode::kDSPFieldName);
 }
 
-void AudioNode::createJUCEAudioProcessor(JNIEnv *env, jobject thiz) noexcept
+void AudioNode::createDSP(JNIEnv *env, jobject thiz) noexcept
 {
-    NativeWrapper::createImpl(env, thiz, AudioNode::kProcessorImpl);
+    NativeWrapper::createImpl(env, thiz, AudioNode::kDSPFieldName);
 
     mEnv = env;
     mEnv->GetJavaVM(&mJVM);
     mEnvThreadId = std::this_thread::get_id();
     mOwner = mEnv->NewGlobalRef(thiz);
 
-    juce::AudioProcessor* processor = AudioNode::getJUCEAudioProcessor(mEnv, mOwner);
+    juce::AudioProcessor* processor = AudioNode::getDSP(mEnv, mOwner);
     const juce::Array<juce::AudioProcessorParameter*> parameters = processor->getParameters();
 
     for (juce::AudioProcessorParameter* p : parameters) {
@@ -156,7 +156,7 @@ juce::String AudioNode::getParameterLabel(const juce::String& id) noexcept
 
 float AudioNode::getValueTreePropertyFloatValue(const juce::String& id) noexcept
 {
-    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getJUCEAudioProcessor(mEnv, mOwner));
+    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getDSP(mEnv, mOwner));
 
     if (proc != nullptr) {
         return proc->getValueTree().getProperty(id);
@@ -167,7 +167,7 @@ float AudioNode::getValueTreePropertyFloatValue(const juce::String& id) noexcept
 
 void AudioNode::setValueTreePropertyFloatValue(const juce::String& id, const float value)
 {
-    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getJUCEAudioProcessor(mEnv, mOwner));
+    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getDSP(mEnv, mOwner));
 
     if (proc != nullptr) {
         proc->getValueTree().setProperty(id, value, nullptr);
@@ -176,7 +176,7 @@ void AudioNode::setValueTreePropertyFloatValue(const juce::String& id, const flo
 
 juce::String AudioNode::getValueTreePropertyStringValue(const juce::String& id) noexcept
 {
-    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getJUCEAudioProcessor(mEnv, mOwner));
+    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getDSP(mEnv, mOwner));
 
     if (proc != nullptr) {
         return proc->getValueTree().getProperty(id);
@@ -187,7 +187,7 @@ juce::String AudioNode::getValueTreePropertyStringValue(const juce::String& id) 
 
 void AudioNode::setValueTreePropertyStringValue(const juce::String& id, const juce::String& value)
 {
-    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getJUCEAudioProcessor(mEnv, mOwner));
+    auto* proc = dynamic_cast<maqam::ValueTreeProvider*>(getDSP(mEnv, mOwner));
 
     if (proc != nullptr) {
         proc->getValueTree().setProperty(id, value, nullptr);
@@ -260,7 +260,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_im_taqs_maqam_AudioNode_jniCreateProcessor(JNIEnv *env, jobject thiz)
 {
-    AudioNode::fromJava(env, thiz)->createJUCEAudioProcessor(env, thiz);
+    AudioNode::fromJava(env, thiz)->createDSP(env, thiz);
 }
 
 extern "C"

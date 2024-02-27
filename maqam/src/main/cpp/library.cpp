@@ -43,8 +43,8 @@ Java_im_taqs_maqam_LibraryKt_jniInit(JNIEnv *env, jclass /*clazz*/, jobject cont
 }
 
 extern "C"
-void _maqam_bind_class(const char* name, maqam_impl_factory_func_t factory,
-                       maqam_impl_deleter_func_t deleter)
+void _maqam_bind_dsp_class(const char* name, maqam_impl_factory_func_t factory,
+                           maqam_impl_deleter_func_t deleter)
 {
-    AudioNode::bindJUCEAudioProcessorClass(name, factory, deleter);
+    AudioNode::bindDSPClass(name, factory, deleter);
 }

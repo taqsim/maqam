@@ -52,13 +52,13 @@ AudioGraph* AudioGraph::fromJava(JNIEnv *env, jobject thiz) noexcept
 
 void AudioGraph::addNode(AudioNode* node, juce::AudioProcessor* processor)
 {
-    if (node->getJUCEAudioProcessorGraphNodeID().uid != 0) {
+    if (node->getAudioProcessorGraphNodeID().uid != 0) {
         throw std::runtime_error("Node already owned by a graph");
     }
 
     juce::AudioProcessorGraph::NodeID nodeID =
             mImpl.addNode(std::unique_ptr<juce::AudioProcessor>(processor))->nodeID;
-    node->setJUCEAudioProcessorGraphNodeID(nodeID);
+    node->setAudioProcessorGraphNodeID(nodeID);
 }
 
 void AudioGraph::connectNodes(AudioNode* source, AudioNode* sink, bool audio, bool midi)
@@ -66,7 +66,7 @@ void AudioGraph::connectNodes(AudioNode* source, AudioNode* sink, bool audio, bo
     juce::AudioProcessorGraph::NodeID srcAudioNodeID, dstAudioNodeID, srcMidiNodeID, dstMidiNodeID;
 
     if (source != nullptr) {
-        srcAudioNodeID = srcMidiNodeID = source->getJUCEAudioProcessorGraphNodeID();
+        srcAudioNodeID = srcMidiNodeID = source->getAudioProcessorGraphNodeID();
 
         if (srcAudioNodeID.uid == 0) {
             throw std::runtime_error("Source node is not owned by graph");
@@ -77,7 +77,7 @@ void AudioGraph::connectNodes(AudioNode* source, AudioNode* sink, bool audio, bo
     }
 
     if (sink != nullptr) {
-        dstAudioNodeID = dstMidiNodeID = sink->getJUCEAudioProcessorGraphNodeID();
+        dstAudioNodeID = dstMidiNodeID = sink->getAudioProcessorGraphNodeID();
 
         if (dstAudioNodeID.uid == 0) {
             throw std::runtime_error("Sink node is not owned by graph");
@@ -142,7 +142,7 @@ Java_im_taqs_maqam_AudioGraph_jniAddNode(JNIEnv *env, jobject thiz, jobject node
 {
     try {
         AudioGraph::fromJava(env, thiz)->addNode(AudioNode::fromJava(env, node),
-                                             AudioNode::getJUCEAudioProcessor(env, node));
+                                                 AudioNode::getDSP(env, node));
     } catch (const std::exception& e) {
         env->ThrowNew(env->FindClass("im/taqs/maqam/Library$Exception"), e.what());
     }

@@ -22,27 +22,30 @@ public:
     using ImplFactoryFunction = void*(*)();
     using ImplDeleterFunction = void(*)(void*);
 
-    static void bindClass(const std::string& javaClassName, ImplFactoryFunction factory,
-                          ImplDeleterFunction deleter, const std::string& field = kDefaultImpl)
+    static void bindClass(const std::string& javaClassName,
+                          ImplFactoryFunction factory,
+                          ImplDeleterFunction deleter,
+                          const std::string& field = kDefaultImplFieldName)
     {
-        std::string key = javaClassName + "_" + field;
+        std::string key = implKey(javaClassName, field);
         sImplFactory[key] = factory;
         sImplDeleter[key] = deleter;
     }
 
     template<class T>
-    static void bindClass(const std::string& javaClassName, const std::string& field = kDefaultImpl)
+    static void bindClass(const std::string& javaClassName,
+                          const std::string& field = kDefaultImplFieldName)
     {
-        std::string key = javaClassName + "_" + field;
+        std::string key = implKey(javaClassName, field);
         sImplFactory[key] = []() -> void* { return new T(); };
         sImplDeleter[key] = [](void* ptr) { delete reinterpret_cast<T*>(ptr); };
     }
 
-    static void createImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl);
-    static void deleteImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl);
+    static void createImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImplFieldName);
+    static void deleteImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImplFieldName);
 
     template<class T>
-    static T* getImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImpl)
+    static T* getImpl(JNIEnv *env, jobject thiz, const char* field = kDefaultImplFieldName)
     {
         if (thiz == nullptr) {
             return nullptr;
@@ -54,7 +57,13 @@ public:
     }
 
 private:
-    static constexpr const char* kDefaultImpl = "impl";
+    static constexpr const char* kDefaultImplFieldName = "impl";
+
+    static inline std::string implKey(const std::string& javaClassName,
+                                      const std::string& field)
+    {
+        return javaClassName + ":" + field;
+    }
 
     static std::string getClassName(JNIEnv *env, jclass clazz);
 

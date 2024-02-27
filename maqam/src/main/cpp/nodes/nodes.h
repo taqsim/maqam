@@ -20,7 +20,7 @@
 namespace maqam {
 
 template<class T>
-constexpr auto bind = &AudioNode::bindJUCEAudioProcessorClass<T>;
+constexpr auto bind = &AudioNode::bindDSPClass<T>;
 
 void bindNodeClasses()
 {

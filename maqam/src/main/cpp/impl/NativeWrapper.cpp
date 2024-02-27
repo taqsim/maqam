@@ -31,7 +31,7 @@ void NativeWrapper::createImpl(JNIEnv *env, jobject thiz, const char* field)
     jclass cls = env->GetObjectClass(thiz);
 
     while (factory == nullptr) {
-        std::string key = getClassName(env, cls) + "_" + field;
+        std::string key = implKey(getClassName(env, cls), field);
         factory = sImplFactory[key];
 
         if (factory == nullptr) {
@@ -50,7 +50,7 @@ void NativeWrapper::deleteImpl(JNIEnv *env, jobject thiz, const char* field)
     jclass cls = env->GetObjectClass(thiz);
 
     while (deleter == nullptr) {
-        std::string key = getClassName(env, cls) + "_" + field;
+        std::string key = implKey(getClassName(env, cls), field);
         deleter = sImplDeleter[key];
 
         if (deleter == nullptr) {
