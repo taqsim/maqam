@@ -48,9 +48,9 @@ android {
 }
 
 dependencies {
-    implementation("com.google.oboe:oboe:1.8.1")
+    implementation("com.google.oboe:oboe:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.test.ext:junit-ktx:1.1.5")
+    implementation("androidx.test.ext:junit-ktx:1.2.1")
 }
