@@ -72,10 +72,12 @@ class Midi internal constructor(context: Context, private val callback: Callback
         }
     }
 
+    @Synchronized
     fun addListener(listener: Listener) {
         listeners.add(listener)
     }
 
+    @Synchronized
     fun removeListener(listener: Listener) {
         listeners.remove(listener)
     }
@@ -125,7 +127,9 @@ class Midi internal constructor(context: Context, private val callback: Callback
 
         ports = portsCopy
 
-        listeners.forEach { it.onMidiPortsChange(ports) }
+        synchronized(this) {
+            listeners.forEach { it.onMidiPortsChange(ports) }
+        }
     }
 
     class Port internal constructor(internal val deviceInfo: MidiDeviceInfo, owner: Midi)
@@ -168,7 +172,9 @@ class Midi internal constructor(context: Context, private val callback: Callback
                             source?.connect(this)
                         }
 
-                        midi.listeners.forEach { it.onMidiPortOpen(this) }
+                        synchronized(midi) {
+                            midi.listeners.forEach { it.onMidiPortOpen(this) }
+                        }
                     }
                 }, null)
             }
@@ -185,7 +191,10 @@ class Midi internal constructor(context: Context, private val callback: Callback
 
             midi.get()?.let { midi ->
                 midi.callback.midiClosePort(id)
-                midi.listeners.forEach { it.onMidiPortClose(this) }
+
+                synchronized(midi) {
+                    midi.listeners.forEach { it.onMidiPortClose(this) }
+                }
             }
         }
 
@@ -195,7 +204,11 @@ class Midi internal constructor(context: Context, private val callback: Callback
             }
 
             MidiEvent.fromBytes(msg.copyOfRange(offset, msg.size - 1))?.let { event ->
-                midi.get()?.listeners?.forEach { it.onMidiEvent(event, this) }
+                midi.get()?.let { midi ->
+                    synchronized(midi) {
+                        midi.listeners.forEach { it.onMidiEvent(event, this) }
+                    }
+                }
             }
         }
     }
