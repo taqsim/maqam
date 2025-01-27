@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "im.taqs.maqam"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 29
