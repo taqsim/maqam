@@ -33,7 +33,6 @@ AKSamplerProcessorEx::AKSamplerProcessorEx()
     , mLoopEnd(0)
 {
     AKSamplerProcessor::addListener(this);
-    samplerPtr->deinit(); // unload test sound
 }
 
 void AKSamplerProcessorEx::load(const String& path)
@@ -44,9 +43,7 @@ void AKSamplerProcessorEx::load(const String& path)
         return;
     }
 
-    // AKSamplerProcessor::loadSfz() implements a sampler unload/load operation that can make the
-    // program crash, even when making sure the audio thread does not access the sampler during such
-    // operation. This should be fixed in AKSampler, meanwhile just replace the sampler instance.
+    // AKSamplerProcessor::loadSfz() can make the program crash, just create a new AKSampler.
 
     int millis = 0;
 

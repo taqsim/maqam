@@ -48,7 +48,7 @@ namespace AudioKitCore {
         vibratoLFO.waveTable.sinusoid();
         vibratoLFO.init(sampleRate/CHUNKSIZE, 5.0f);
 
-        loadTestWaveform();
+        //loadTestWaveform();
         buildKeyMap();
 
         VoicePointerArray vpa;
