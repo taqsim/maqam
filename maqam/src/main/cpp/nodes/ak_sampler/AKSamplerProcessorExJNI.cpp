@@ -1,6 +1,7 @@
 //
 // Maqam - Mobile App Quick Audio & MIDI
-// Copyright (C) 2024 TAQS.IM
+//
+// SPDX-FileCopyrightText: 2024 TAQS.IM <contact@taqs.im>
 // SPDX-License-Identifier: MIT
 //
 
