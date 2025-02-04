@@ -15,6 +15,10 @@ import im.taqs.maqam.impl.MidiEvent.ControlChange.Companion.MODULATION_WHEEL
 // Wraps an AKSampler instance with custom TAQS.IM patches (AKSamplerProcessorEx)
 open class AKSampler(midiChannel: Int = 0) : SFZPlayer(midiChannel) {
 
+    companion object {
+        const val BUILTIN_TEST_WAVEFORM_PATH = "builtin:test-waveform"
+    }
+
     val mainMasterLevel               = parameter("main_master_level")
     val mainPitchBendUpSemitones      = parameter("main_pitchbend_up_semitones")
     val mainPitchBendDownSemitones    = parameter("main_pitchbend_down_semitones")

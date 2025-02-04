@@ -18,6 +18,8 @@
 using namespace juce;
 using namespace maqam;
 
+static const char* kBuiltinTestWaveformPath = "builtin:test-waveform";
+
 AKSamplerProcessorEx::AKSamplerProcessorEx()
     : mParameters (*this, nullptr, "AKSampler", createParameterLayout())
     , mA4Frequency(440.0)
@@ -65,13 +67,17 @@ void AKSamplerProcessorEx::load(const String& path)
     mErrorMessage.clear();
     setDefaultOpcodeValues();
 
-    sfz::Parser parser;
-    parser.setListener(this);
-    parser.parseFile(mSfzPath.string());
+    if (path == kBuiltinTestWaveformPath) {
+        samplerPtr->loadTestWaveform();
+    } else {
+        sfz::Parser parser;
+        parser.setListener(this);
+        parser.parseFile(mSfzPath.string());
 
-    if (! mErrorMessage.empty()) {
-        mSamplerBusy.clear();
-        throw std::runtime_error(mErrorMessage);
+        if (! mErrorMessage.empty()) {
+            mSamplerBusy.clear();
+            throw std::runtime_error(mErrorMessage);
+        }
     }
 
     samplerPtr->buildKeyMap();
