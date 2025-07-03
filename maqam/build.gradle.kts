@@ -1,12 +1,12 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
 }
 
 android {
     namespace = "im.taqs.maqam"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 29
@@ -15,6 +15,7 @@ android {
             cmake {
                 cppFlags += "-std=c++17" // avoid missing symbols during linkage caused by abseil
                 arguments += "-DANDROID_STL=c++_shared" // required by oboe
+                arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON" // support 16 KB page sizes
             }
         }
     }
@@ -29,11 +30,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(11))
+        }
     }
     externalNativeBuild {
         cmake {
@@ -48,9 +51,9 @@ android {
 }
 
 dependencies {
-    implementation("com.google.oboe:oboe:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.google.oboe:oboe:1.9.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.test.ext:junit-ktx:1.2.1")
 }
