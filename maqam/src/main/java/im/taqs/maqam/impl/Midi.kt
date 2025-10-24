@@ -69,7 +69,7 @@ class Midi internal constructor(context: Context, private val callback: Callback
             }
         } catch(e: Exception) {
             // java.lang.AssertionError: Unsupported Service: midi
-            Log.e(Library.LOG_TAG, "MIDI not available")
+            Log.e(Library.LOG_TAG, "MIDI not available - ${e.localizedMessage}")
         }
     }
 
@@ -89,6 +89,7 @@ class Midi internal constructor(context: Context, private val callback: Callback
 
     internal fun start() {
         manager?.registerDeviceCallback(deviceCallback, null)
+        rebuildPortsList()
     }
 
     internal fun stop() {
@@ -101,10 +102,6 @@ class Midi internal constructor(context: Context, private val callback: Callback
         }
 
         override fun onDeviceRemoved(device: MidiDeviceInfo?) {
-            rebuildPortsList()
-        }
-
-        override fun onDeviceStatusChanged(status: MidiDeviceStatus?) {
             rebuildPortsList()
         }
     }
@@ -142,6 +139,9 @@ class Midi internal constructor(context: Context, private val callback: Callback
         var isOpen = false
             private set
 
+        var isCloseRequested = false
+            private set
+
         val isSink: Boolean
             get() = deviceInfo.inputPortCount > 0
 
@@ -165,6 +165,7 @@ class Midi internal constructor(context: Context, private val callback: Callback
                 midi.manager?.openDevice(deviceInfo, { midiDevice ->
                     if (midiDevice != null) {
                         isOpen = true
+                        isCloseRequested = false
 
                         midi.callback.midiOpenPort(id, midiDevice)
 
@@ -187,6 +188,9 @@ class Midi internal constructor(context: Context, private val callback: Callback
             }
 
             Log.i(Library.LOG_TAG, "Close MIDI port [$name]")
+
+            isOpen = false
+            isCloseRequested = true
 
             source?.disconnect(this)
 

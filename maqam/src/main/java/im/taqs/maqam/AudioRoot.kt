@@ -19,7 +19,6 @@ import im.taqs.maqam.impl.MidiPortOpenState
 import im.taqs.maqam.impl.NativeWrapper
 import im.taqs.maqam.impl.Variant
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -203,7 +202,7 @@ class AudioRoot(context: Context, private val options: Options = Options())
     override fun onMidiPortsChange(ports: List<Midi.Port>) {
         if (options.autoOpenMidiPorts) {
             midi.ports
-                .filter { ! it.isOpen }
+                .filter { ! it.isOpen && ! it.isCloseRequested }
                 .forEach { it.open() }
         }
     }
