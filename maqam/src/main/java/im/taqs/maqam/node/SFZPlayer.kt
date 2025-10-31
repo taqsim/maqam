@@ -9,8 +9,11 @@ package im.taqs.maqam.node
 
 import im.taqs.maqam.AudioNode
 import im.taqs.maqam.ext.midiEventsFlow
+import im.taqs.maqam.impl.AudioNodeParameter
 
 abstract class SFZPlayer(open var midiChannel: Int = 0): AudioNode(), GainControl, EnvelopeControl {
+
+    abstract val transposeSemitones: AudioNodeParameter
 
     abstract fun load(path: String)
     abstract fun stopAllVoices()

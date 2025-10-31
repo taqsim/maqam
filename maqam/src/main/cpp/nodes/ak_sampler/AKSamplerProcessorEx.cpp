@@ -120,9 +120,9 @@ void AKSamplerProcessorEx::handleMidiEvent(const MidiMessage& message) noexcept
     }
 
     if (message.isNoteOn()) {
-        const int smpNn = message.getNoteNumber() + patchParams.sampler.osc1.pitchOffsetSemitones;
+        const int smpNn = message.getNoteNumber() + mSamplerParams.osc1.pitchOffsetSemitones;
         const float cents = static_cast<float>(mCentsFromC[smpNn % 12])
-                + patchParams.sampler.osc1.detuneOffsetCents;
+                + mSamplerParams.osc1.detuneOffsetCents;
         const float n = static_cast<float>(smpNn) + cents / 100.f;
         const auto fSmpHz = mA4Frequency * pow(2.f, (n - 69.f) / 12.f);
         const int vel = static_cast<int>(127.f * message.getFloatVelocity());
@@ -132,7 +132,7 @@ void AKSamplerProcessorEx::handleMidiEvent(const MidiMessage& message) noexcept
             samplerPtr->playNote(smpNn, vel, fSmpHz);
         }
     } else if (message.isNoteOff()) {
-        int smpNn = message.getNoteNumber() + patchParams.sampler.osc1.pitchOffsetSemitones;
+        int smpNn = message.getNoteNumber() + mSamplerParams.osc1.pitchOffsetSemitones;
         samplerPtr->stopNote(smpNn, false);
     } else if (message.isAllNotesOff() || message.isAllSoundOff()) {
         for (unsigned i = 0; i < 128; i++) {

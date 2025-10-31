@@ -9,6 +9,7 @@ package im.taqs.maqam.node
 
 import im.taqs.maqam.Library
 import im.taqs.maqam.ext.fromNormalizedValue
+import im.taqs.maqam.impl.AudioNodeParameter
 import im.taqs.maqam.impl.MidiEvent
 import im.taqs.maqam.impl.MidiEvent.ControlChange.Companion.MODULATION_WHEEL
 
@@ -46,6 +47,9 @@ open class AKSampler(midiChannel: Int = 0) : SFZPlayer(midiChannel) {
     override val envelopeDecay get() = ampEGDecayTimeSeconds
     override val envelopeSustain get() = ampEGSustainLevel
     override val envelopeRelease get() = ampEGReleaseTimeSeconds
+
+    override val transposeSemitones: AudioNodeParameter
+        get() = osc1PitchOffsetSemitones
 
     override var midiChannel: Int
         get() = jniGetMidiChannel()
