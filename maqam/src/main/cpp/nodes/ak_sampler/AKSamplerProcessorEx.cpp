@@ -120,8 +120,9 @@ void AKSamplerProcessorEx::handleMidiEvent(const MidiMessage& message) noexcept
     }
 
     if (message.isNoteOn()) {
-        const int smpNn = message.getNoteNumber() + mSamplerParams.osc1.pitchOffsetSemitones;
-        const float cents = static_cast<float>(mCentsFromC[smpNn % 12])
+        const int noteNumber = message.getNoteNumber();
+        const int smpNn = noteNumber + mSamplerParams.osc1.pitchOffsetSemitones;
+        const float cents = static_cast<float>(mCentsFromC[noteNumber % 12])
                 + mSamplerParams.osc1.detuneOffsetCents;
         const float n = static_cast<float>(smpNn) + cents / 100.f;
         const auto fSmpHz = mA4Frequency * pow(2.f, (n - 69.f) / 12.f);
