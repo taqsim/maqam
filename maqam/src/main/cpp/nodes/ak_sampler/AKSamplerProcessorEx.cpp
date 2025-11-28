@@ -229,20 +229,20 @@ void AKSamplerProcessorEx::audioProcessorParameterChanged(AudioProcessor* proces
     mSamplerParams.main.masterLevel =
             getParameterValue(kParameterMainMasterLevel);
     mSamplerParams.main.pitchBendUpSemitones =
-            static_cast<int>(getParameterValue(kParameterMainPitchBendUpSemitones));
+            juce::roundToInt(getParameterValue(kParameterMainPitchBendUpSemitones));
     mSamplerParams.main.pitchBendDownSemitones =
-            static_cast<int>(getParameterValue(kParameterMainPitchBendDownSemitones));
+            juce::roundToInt(getParameterValue(kParameterMainPitchBendDownSemitones));
     mSamplerParams.main.ampVelocitySensitivity =
             getParameterValue(kParameterMainAmpVelocitySensitivity);
     mSamplerParams.main.filterVelocitySensitivity =
             getParameterValue(kParameterMainFilterVelocitySensitivity);
 
     mSamplerParams.osc1.pitchOffsetSemitones =
-            static_cast<int>(getParameterValue(kParameterOsc1PitchOffsetSemitones));
+            juce::roundToInt(getParameterValue(kParameterOsc1PitchOffsetSemitones));
     mSamplerParams.osc1.detuneOffsetCents =
             getParameterValue(kParameterOsc1DetuneOffsetCents);
 
-    mSamplerParams.filter.stages = static_cast<int>(getParameterValue(kParameterFilterStages));
+    mSamplerParams.filter.stages = juce::roundToInt(getParameterValue(kParameterFilterStages));
     mSamplerParams.filter.cutoff = getParameterValue(kParameterFilterCutoff);
     mSamplerParams.filter.resonance = getParameterValue(kParameterFilterResonance);
     mSamplerParams.filter.envAmount = getParameterValue(kParameterFilterEnvAmount);
