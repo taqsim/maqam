@@ -388,7 +388,7 @@ AKSamplerProcessorEx::createParameterLayout() noexcept
         createFloatParameter(
                 kParameterOsc1PitchOffsetSemitones,
                 "Oscillator 1 pitch offset", "semitones",
-                /*min*/-12.f, /*max*/12.f, /*def*/0
+                /*min*/-127.f, /*max*/127.f, /*def*/0
         ),
         createFloatParameter(
                 kParameterOsc1DetuneOffsetCents,
