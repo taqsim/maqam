@@ -88,7 +88,11 @@ class AudioRoot(context: Context, private val options: Options = Options())
         midi.start()
 
         if (options.stateFile != null) {
-            loadedStateFileOnStart = loadState()
+            try {
+                loadedStateFileOnStart = loadState()
+            } catch (e: Exception) {
+                Log.e(Library.LOG_TAG, "Could not load state - ${e.message}")
+            }
         }
 
         if (Library.hasJNI) {
@@ -132,7 +136,6 @@ class AudioRoot(context: Context, private val options: Options = Options())
         }
 
         isLoadingState = true
-
         val state = Json.decodeFromString<State>(options.stateFile.readText())
 
         graph.nodePropertyValues = state.graphNodePropertyValues
