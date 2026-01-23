@@ -160,9 +160,12 @@ class AudioRoot(context: Context, private val options: Options = Options())
             rootMetadata = metadata.store
         )
 
-        options.stateFile.writeText(Json.encodeToString(state))
-
-        Log.i(Library.LOG_TAG, "Saved state")
+        try {
+            options.stateFile.writeText(Json.encodeToString(state))
+            Log.i(Library.LOG_TAG, "Saved state")
+        } catch (e: Exception) {
+            Log.e(Library.LOG_TAG, "Could not save state - ${e.message}")
+        }
     }
 
     //
@@ -262,11 +265,7 @@ class AudioRoot(context: Context, private val options: Options = Options())
             cancelSaveState()
 
             val block = Runnable {
-                try {
-                    saveState()
-                } catch (e: Exception) {
-                    Log.e(Library.LOG_TAG, "Could not automatically save state - ${e.message}")
-                }
+                saveState();
             }
 
             handler.postDelayed(block, 500L)
